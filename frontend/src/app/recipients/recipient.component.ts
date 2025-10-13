@@ -13,6 +13,8 @@ import { ApiService } from '../services/api.services';
 })
 export class RecipientComponent implements OnInit {
   recipients: any[] = [];
+  filteredRecipients: any[] = [];
+  searchTerm: string = ''; // texte saisi par l’utilisateur
   showForm = false;
   editingRecipient: any = null;
   selectedFile: File | null = null;
@@ -36,6 +38,7 @@ export class RecipientComponent implements OnInit {
       next: (data) => {
         console.log('Recipients loaded:', data);
         this.recipients = data;
+        this.filteredRecipients = [...data];
         this.cdr.detectChanges(); // force le rafraîchissement de la vue
       },
       error: (error) => {
@@ -43,6 +46,21 @@ export class RecipientComponent implements OnInit {
         alert('Error loading recipients. Check console for details.');
       },
     });
+  }
+
+  loadFilteredRecipients() {
+    console.log('Loading filtered recipients...');
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredRecipients = [...this.recipients]; // aucun filtre encore car term est vide
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.filteredRecipients = this.recipients.filter(
+      (r) => r.name.toLowerCase().includes(term) || r.email.toLowerCase().includes(term)
+    )
+    this.cdr.detectChanges();
   }
 
   openForm(recipient?: any) {

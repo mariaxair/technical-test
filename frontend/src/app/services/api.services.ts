@@ -4,26 +4,22 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private baseUrl = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient) {
     console.log('ApiService initialized with baseUrl:', this.baseUrl);
   }
 
   // Templates
-  getTemplates(): Observable<any> {
+  getTemplates(page = 1, limit = 10): Observable<any> {
     console.log('API: GET templates');
-    return this.http.get(`${this.baseUrl}/templates`).pipe(
-      tap(data => console.log('API Response:', data)),
+    return this.http.get(`${this.baseUrl}/templates?page=${page}&limit=${limit}`).pipe(
+      tap((data) => console.log('API Response:', data)),
       catchError(this.handleError)
     );
-  }
-
-  getTemplate(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/templates/${id}`);
   }
 
   createTemplate(data: any): Observable<any> {
@@ -42,15 +38,13 @@ export class ApiService {
   getRecipients(): Observable<any> {
     console.log('API: GET recipients');
     return this.http.get(`${this.baseUrl}/recipients`).pipe(
-      tap(data => console.log('API Response:', data)),
+      tap((data) => console.log('API Response:', data)),
       catchError(this.handleError)
     );
   }
 
   getValidRecipients(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/recipients/valid`).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.get(`${this.baseUrl}/recipients/valid`).pipe(catchError(this.handleError));
   }
 
   createRecipient(data: any): Observable<any> {
@@ -75,14 +69,14 @@ export class ApiService {
   sendBulkEmails(templateId: number, recipientIds?: number[]): Observable<any> {
     return this.http.post(`${this.baseUrl}/emails/send-bulk`, {
       templateId,
-      recipientIds
+      recipientIds,
     });
   }
 
   sendTestEmail(templateId: number, testEmail: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/emails/test`, {
       templateId,
-      testEmail
+      testEmail,
     });
   }
 
@@ -92,10 +86,6 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/history${params}`);
   }
 
-  getHistoryByTemplate(templateId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/history/template/${templateId}`);
-  }
-
   getStatistics(): Observable<any> {
     return this.http.get(`${this.baseUrl}/history/stats`);
   }
@@ -103,7 +93,7 @@ export class ApiService {
   private handleError(error: HttpErrorResponse) {
     console.error('API Error:', error);
     let errorMessage = 'An error occurred';
-    
+
     if (error.error instanceof ErrorEvent) {
       // Client-side error
       errorMessage = `Error: ${error.error.message}`;
@@ -111,7 +101,7 @@ export class ApiService {
       // Server-side error
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    
+
     return throwError(() => new Error(errorMessage));
   }
 }

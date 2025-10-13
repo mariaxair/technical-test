@@ -9,7 +9,7 @@
         <div class="stat-label">Total Emails</div>
       </div>
     </div>
-    
+
     <div class="stat-card sent">
       <div class="stat-icon">✅</div>
       <div class="stat-content">
@@ -17,7 +17,7 @@
         <div class="stat-label">Successfully Sent</div>
       </div>
     </div>
-    
+
     <div class="stat-card failed">
       <div class="stat-icon">❌</div>
       <div class="stat-content">
@@ -25,7 +25,7 @@
         <div class="stat-label">Failed</div>
       </div>
     </div>
-    
+
     <div class="stat-card rate">
       <div class="stat-icon">📈</div>
       <div class="stat-content">
@@ -33,6 +33,15 @@
         <div class="stat-label">Success Rate</div>
       </div>
     </div>
+  </div>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search by recipient or template..."
+      [(ngModel)]="searchTerm"
+      (input)="loadFilteredHistory()"
+    />
   </div>
 
   <div class="table-container">
@@ -48,8 +57,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of history">
-          <td>{{ item.sent_at | date:'short' }}</td>
+        <tr *ngFor="let item of filteredHistory">
+          <td>{{ item.sent_at | date : 'short' }}</td>
           <td>{{ item.template_name || '-' }}</td>
           <td>{{ item.template_subject || '-' }}</td>
           <td>
@@ -59,7 +68,11 @@
             </div>
           </td>
           <td>
-            <span class="status-badge" [class.sent]="item.status === 'sent'" [class.failed]="item.status === 'failed'">
+            <span
+              class="status-badge"
+              [class.sent]="item.status === 'sent'"
+              [class.failed]="item.status === 'failed'"
+            >
               {{ item.status === 'sent' ? '✓ Sent' : '✗ Failed' }}
             </span>
           </td>

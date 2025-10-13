@@ -14,6 +14,8 @@ import { ApiService } from '../services/api.services';
 export class SendEmailComponent implements OnInit {
   templates: any[] = [];
   recipients: any[] = [];
+  filterdRecipients: any[] = [];
+  searchTerm: string = '';
   selectedTemplateId: number | null = null;
   selectedRecipients: number[] = [];
   selectAll = false;
@@ -38,10 +40,28 @@ export class SendEmailComponent implements OnInit {
 
   loadRecipients() {
     this.apiService.getValidRecipients().subscribe(
-      (data) => (this.recipients = data),
+      (data) => {
+        this.recipients = data;
+        this.filterdRecipients = [...data]; // initialement, pas de filtre
+        this.cdr.detectChanges();
+      },
       (error) => console.error('Error loading recipients:', error)
     );
     this.cdr.detectChanges();
+  }
+
+  loadfilteredRecipients() {
+    const term = this.searchTerm.toLowerCase().trim();
+
+    if (!term) {
+      this.filterdRecipients = [...this.recipients]; // aucun filtre encore car term est vide
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.filterdRecipients = this.recipients.filter(
+      (r) => r.name.toLowerCase().includes(term) || r.email.toLowerCase().includes(term)
+    );
   }
 
   toggleSelectAll() {
@@ -68,24 +88,6 @@ export class SendEmailComponent implements OnInit {
     return this.selectedRecipients.includes(id);
   }
 
-  sendTestEmail() {
-    if (!this.selectedTemplateId || !this.testEmail) {
-      alert('Please select a template and enter a test email');
-      return;
-    }
-
-    this.apiService.sendTestEmail(this.selectedTemplateId, this.testEmail).subscribe(
-      () => {
-        alert('Test email sent successfully!');
-        this.testEmail = '';
-      },
-      (error) => {
-        console.error('Error sending test email:', error);
-        alert('Error sending test email');
-      }
-    );
-  }
-
   sendBulkEmails() {
     if (!this.selectedTemplateId) {
       alert('Please select a template');
@@ -103,20 +105,20 @@ export class SendEmailComponent implements OnInit {
 
     this.isSending = true;
     this.sendResults = null;
-    this.cdr.detectChanges(); // 🔹 Met à jour immédiatement l’état du bouton avant l’envoi
+    this.cdr.detectChanges(); // Met à jour immédiatement l’état du bouton avant l’envoi
 
     this.apiService.sendBulkEmails(this.selectedTemplateId, this.selectedRecipients).subscribe({
       next: (results) => {
         this.isSending = false;
         this.sendResults = results;
         alert(`Emails sent successfully!\nSent: ${results.sent}\nFailed: ${results.failed}`);
-        this.cdr.detectChanges(); // 🔹 Force Angular à rafraîchir la vue APRÈS réception
+        this.cdr.detectChanges(); // Force Angular à rafraîchir la vue APRÈS réception
       },
       error: (error) => {
         this.isSending = false;
         console.error('Error sending bulk emails:', error);
         alert('Error sending bulk emails');
-        this.cdr.detectChanges(); // 🔹 Force aussi la maj en cas d’erreur
+        this.cdr.detectChanges(); // Force aussi la maj en cas d’erreur
       },
     });
   }

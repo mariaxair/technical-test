@@ -5,28 +5,23 @@
     <div class="section-card">
       <h3>1. Select Template</h3>
       <select [(ngModel)]="selectedTemplateId" class="select-input">
-        <option [ngValue]="null">-- Select a template --</option>
+        <option [ngValue]="null">Select a template</option>
         <option *ngFor="let template of templates" [ngValue]="template.id">
           {{ template.name }} - {{ template.subject }}
         </option>
       </select>
-
-      <div class="test-email-section" *ngIf="selectedTemplateId">
-        <h4>Send Test Email</h4>
-        <div class="test-email-form">
-          <input
-            type="email"
-            [(ngModel)]="testEmail"
-            placeholder="Enter test email address"
-            class="input-field"
-          />
-          <button class="btn-secondary" (click)="sendTestEmail()">Send Test</button>
-        </div>
-      </div>
     </div>
 
     <div class="section-card">
       <h3>2. Select Recipients</h3>
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="Search recipient by name or email..."
+          [(ngModel)]="searchTerm"
+          (input)="loadfilteredRecipients()"
+        />
+      </div>
       <div class="recipients-header">
         <label class="checkbox-label">
           <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" />
@@ -37,7 +32,7 @@
       <div class="recipients-list">
         <div
           class="recipient-item"
-          *ngFor="let recipient of recipients"
+          *ngFor="let recipient of filterdRecipients"
           [class.selected]="isSelected(recipient.id)"
         >
           <label class="checkbox-label">

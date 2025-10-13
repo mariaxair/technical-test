@@ -12,32 +12,52 @@ export const getAllHistory = async (req, res) => {
   }
 };
 
-// GET history by ID
-export const getHistoryById = async (req, res) => {
-  try {
-    const model = new HistoryModel(req.app.locals.db);
-    const history = await model.getById(req.params.id);
+// // GET history by ID
+// export const getHistoryByRecipientNameOrId = async (req, res) => {
+//   const { id, name } = req.params;
+//   const model = new HistoryModel(req.app.locals.db);
 
-    if (!history) {
-      return res.status(404).json({ error: "History entry not found" });
-    }
+//   try {
+//     let history;
+//     if (id) {
+//       history = await model.getByRecipientIdOrName(id);
+//     } else if (name) {
+//       history = await model.getByRecipientIdOrName(name);
+//     } else {
+//       return res
+//         .status(400)
+//         .json({ error: "Please provide either id or name" });
+//     }
 
-    res.json(history);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+//     if (!history || history.length === 0) {
+//       return res.status(404).json({ error: "No history found" });
+//     }
 
-// GET email history by template
-export const getHistoryByTemplate = async (req, res) => {
-  try {
-    const model = new HistoryModel(req.app.locals.db);
-    const history = await model.getByTemplate(req.params.templateId);
-    res.json(history);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+//     res.json(history);
+//   } catch (error) {
+//     console.error("Error fetching history:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// // GET email history by template
+// export const getHistoryByTemplate = async (req, res) => {
+//   try {
+//     const model = new HistoryModel(req.app.locals.db);
+//     const history = await model.getByTemplate(req.params.name);
+
+//     if (!history || history.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ error: "No history found for this template" });
+//     }
+
+//     res.json(history);
+//   } catch (error) {
+//     console.error("Error fetching history by template:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 // GET statistics
 export const getHistoryStats = async (req, res) => {

@@ -43,33 +43,44 @@ export default class HistoryModel {
     return rows;
   }
 
-  async getById(id) {
-    const [rows] = await this.db.query(
-      `SELECT 
-        eh.*,
-        t.name as template_name,
-        t.subject as template_subject,
-        t.body as template_body,
-        r.email as recipient_email,
-        r.name as recipient_name
-      FROM email_history eh
-      LEFT JOIN templates t ON eh.template_id = t.id
-      LEFT JOIN recipients r ON eh.recipient_id = r.id
-      WHERE eh.id = ?`,
-      [id]
-    );
-    return rows[0];
+  async getByRecipientIdOrName({id, name}) {
+    let query = `
+      SELECT 
+        h.*,
+        t.name AS template_name,
+        t.subject AS template_subject,
+        r.email AS recipient_email,
+        r.name AS recipient_name
+      FROM history h
+      LEFT JOIN templates t ON h.template_id = t.id
+      LEFT JOIN recipients r ON h.recipient_id = r.id
+      WHERE 1=1
+    `;
+
+    const params = [];
+
+    if (id) {
+      query += " AND r.id = ?";
+      params.push(id);
+    }
+
+    if (name) {
+      query += " AND r.name LIKE ?";
+      params.push(`%${name}%`);
+    }
+
+    query += " ORDER BY h.created_at DESC";
+
+    const [rows] = await this.db.query(query, params);
+    return rows;
   }
 
-  async getByTemplate(templateId) {
+  async getByTemplate(name) {
     // (LEFT JOIN templates t ON h.template_id = t.id)  pour le lien logique
     // (WHERE h.template_id = ?) pour le filtre
     const [rows] = await this.db.query(
       `select 
-        h.id,
-        h.status,
-        h.error_message,
-        h.sent_at,
+        h.*,
         t.name as template_name,
         t.subject as template_subject,
         t.body as template_body,
@@ -78,9 +89,9 @@ export default class HistoryModel {
       FROM history h
       LEFT JOIN recipients r ON h.recipient_id = r.id
       LEFT JOIN templates t ON h.template_id = t.id  
-      WHERE h.template_id = ?
+      WHERE t.name like ?
       ORDER BY h.sent_at DESC`,
-      [templateId]
+      [`%${name}%`]
     );
     return rows;
   }

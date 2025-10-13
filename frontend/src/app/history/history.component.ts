@@ -13,6 +13,8 @@ import { ApiService } from '../services/api.services';
 })
 export class HistoryComponent implements OnInit {
   history: any[] = [];
+  filteredHistory: any[] = [];
+  searchTerm: string = '';
   statistics: any = null;
   limit = 100;
 
@@ -29,6 +31,7 @@ export class HistoryComponent implements OnInit {
       next: (data) => {
         console.log('History loaded:', data);
         this.history = data;
+        this.filteredHistory = [...data]; // initialement, pas de filtre
         this.cdr.detectChanges(); // 🔥 force Angular à mettre à jour la vue immédiatement
       },
       error: (error) => {
@@ -39,6 +42,24 @@ export class HistoryComponent implements OnInit {
         console.log('✅ History loading complete');
       },
     });
+  }
+
+  loadFilteredHistory() {
+    console.log('Loading filtered history...');
+
+    const term = this.searchTerm.toLowerCase().trim();
+
+    if (!term) {
+      this.filteredHistory = [...this.history]; // aucun filtre encore car term est vide
+      this.cdr.detectChanges();
+      return;
+    }
+    this.filteredHistory = this.history.filter(
+      (h) =>
+        h.recipient_name.toLowerCase().includes(term) ||
+        h.template_name.toLowerCase().includes(term)
+    );
+    this.cdr.detectChanges();
   }
 
   loadStatistics() {

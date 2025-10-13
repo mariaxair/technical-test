@@ -16,9 +16,9 @@ export default class EmailModel {
     });
   }
 
-  async sendBulk(templateId, recipientIds) {
+  async sendBulk(templateId, { recipientIds }) {
     const template = await this.getTemplate(templateId);
-    const recipients = await this.getRecipients(recipientIds);
+    const recipients = await this.getRecipients({ recipientIds });
 
     const results = {
       total: recipients.length,
@@ -29,7 +29,7 @@ export default class EmailModel {
 
     for (const recipient of recipients) {
       try {
-        // ✅ Étape 1 : récupérer les variables dynamiques
+        //récupérer les variables dynamiques
         let metadata = {};
         try {
           if (recipient.metadata) {
@@ -44,19 +44,19 @@ export default class EmailModel {
           metadata = {};
         }
 
-        // ✅ Étape 2 : compléter les infos de base
+        //compléter les infos de base
         metadata = {
           ...metadata,
           name: recipient.name || metadata.name || "Valued Customer",
           email: recipient.email,
         };
 
-        // ✅ Étape 3 : générer le corps de l’email
+        //générer le corps de l’email
         const personalizedBody = this.replaceVariables(template.body, metadata);
 
-        // ✅ Étape 4 : envoi
+        // envoi
         await this.transporter.sendMail({
-          from: process.env.SMTP_USER,
+          from: `"NIGABOB" <no-reply@tondomaine.com>`,
           to: recipient.email,
           subject: this.replaceVariables(template.subject, metadata),
           html: personalizedBody,
@@ -92,12 +92,20 @@ export default class EmailModel {
     return rows[0];
   }
 
-  async getRecipients(recipientIds) {
+  async getRecipients({ recipientIds, recipientName }) {
     if (recipientIds && recipientIds.length > 0) {
       const placeholders = recipientIds.map(() => "?").join(",");
       const [rows] = await this.db.query(
         `SELECT * FROM recipients WHERE id IN (${placeholders}) AND is_valid = 1`,
         recipientIds
+      );
+      return rows;
+    }
+
+    if (recipientName) {
+      const [rows] = await this.db.query(
+        "SELECT * FROM recipients WHERE name LIKE ? AND is_valid = 1",
+        [`%${recipientName}%`]
       );
       return rows;
     }

@@ -11,7 +11,7 @@ export const sendBulk = async (req, res) => {
     }
 
     const model = new EmailModel(req.app.locals.db);
-    const results = await model.sendBulk(templateId, recipientIds);
+    const results = await model.sendBulk(templateId, {recipientIds});
 
     res.json({
       message: "Bulk email sending completed",

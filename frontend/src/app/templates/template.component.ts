@@ -13,6 +13,11 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class TemplateComponent implements OnInit {
   templates: any[] = [];
+  filteredTemplates: any[] = []; // liste filtrée
+  searchTerm: string = ''; // texte saisi par l’utilisateur
+  page: number = 1;
+  limit: number = 10;
+  pagination: any = {};
   showForm = false;
   editingTemplate: any = null;
 
@@ -32,17 +37,48 @@ export class TemplateComponent implements OnInit {
 
   loadTemplates() {
     console.log('Loading templates...');
-    this.apiService.getTemplates().subscribe({
-      next: (data) => {
-        console.log('Templates loaded:', data);
-        this.templates = data;
-        this.cdr.detectChanges(); // force le rafraîchissement de la vue
+    this.apiService.getTemplates(this.page, this.limit).subscribe({
+      next: (res) => {
+        console.log('Templates loaded:', res.data);
+        this.templates = res.data;
+        this.filteredTemplates = [...res.data];
+        this.pagination = res.pagination;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading templates:', error);
         alert('Error loading templates. Check console for details.');
       },
     });
+  }
+
+  filterTemplates() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredTemplates = [...this.templates]; // aucun filtre encore
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.filteredTemplates = this.templates.filter(
+      (t) => t.name.toLowerCase().includes(term) || t.subject.toLowerCase().includes(term)
+    );
+
+    this.cdr.detectChanges();
+  }
+
+  previousPage() {
+    if (this.page > 1) {
+      this.page--;
+      this.loadTemplates();
+    }
+  }
+
+  nextPage() {
+    if (this.page < this.pagination.totalPages) {
+      this.page++;
+      this.loadTemplates();
+    }
   }
 
   openForm(template?: any) {

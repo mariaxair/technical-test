@@ -27,21 +27,21 @@ export const getValidRecipients = async (req, res) => {
   }
 };
 
-// GET recipient by ID
-export const getRecipientById = async (req, res) => {
-  try {
-    const model = new RecipientModel(req.app.locals.db);
-    const recipient = await model.getById(req.params.id);
+// // GET recipient by ID
+// export const getRecipientById = async (req, res) => {
+//   try {
+//     const model = new RecipientModel(req.app.locals.db);
+//     const recipient = await model.getById(req.params.id);
 
-    if (!recipient) {
-      return res.status(404).json({ error: "Recipient not found" });
-    }
+//     if (!recipient) {
+//       return res.status(404).json({ error: "Recipient not found" });
+//     }
 
-    res.json(recipient);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+//     res.json(recipient);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 // POST create new recipient
 export const createRecipient = async (req, res) => {

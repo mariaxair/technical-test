@@ -3,11 +3,16 @@ export default class TemplateModel {
     this.db = db;
   }
 
-  async getAll() {
+  async getAll({ limit, offset }) {
     const [rows] = await this.db.query(
-      "SELECT * FROM templates ORDER BY created_at DESC"
+      "SELECT * FROM templates ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      [limit, offset]
     );
-    return rows;
+    const [[{ total }]] = await this.db.query(
+      "SELECT COUNT(*) AS total FROM templates"
+    );
+
+    return { templates: rows, total };
   }
 
   async getById(id) {
