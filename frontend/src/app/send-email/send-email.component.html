@@ -1,0 +1,92 @@
+<div class="send-container">
+  <h2>Send Bulk Emails</h2>
+
+  <div class="send-section">
+    <div class="section-card">
+      <h3>1. Select Template</h3>
+      <select [(ngModel)]="selectedTemplateId" class="select-input">
+        <option [ngValue]="null">-- Select a template --</option>
+        <option *ngFor="let template of templates" [ngValue]="template.id">
+          {{ template.name }} - {{ template.subject }}
+        </option>
+      </select>
+
+      <div class="test-email-section" *ngIf="selectedTemplateId">
+        <h4>Send Test Email</h4>
+        <div class="test-email-form">
+          <input
+            type="email"
+            [(ngModel)]="testEmail"
+            placeholder="Enter test email address"
+            class="input-field"
+          />
+          <button class="btn-secondary" (click)="sendTestEmail()">Send Test</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>2. Select Recipients</h3>
+      <div class="recipients-header">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" />
+          Select All ({{ recipients.length }} recipients)
+        </label>
+      </div>
+
+      <div class="recipients-list">
+        <div
+          class="recipient-item"
+          *ngFor="let recipient of recipients"
+          [class.selected]="isSelected(recipient.id)"
+        >
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isSelected(recipient.id)"
+              (change)="toggleRecipient(recipient.id)"
+            />
+            <span class="recipient-info">
+              <strong>{{ recipient.email }}</strong>
+              <span class="recipient-name" *ngIf="recipient.name">{{ recipient.name }}</span>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>3. Send Emails</h3>
+      <div class="send-summary">
+        <p><strong>Template:</strong> {{ selectedTemplate?.name || 'Not selected' }}</p>
+        <p><strong>Recipients:</strong> {{ selectedRecipients.length }} selected</p>
+      </div>
+
+      <button
+        class="btn-send"
+        (click)="sendBulkEmails()"
+        [disabled]="!selectedTemplateId || selectedRecipients.length === 0 || isSending"
+      >
+        {{ isSending ? '📤 Sending...' : '📧 Send Bulk Emails' }}
+      </button>
+
+      <div class="results-section" *ngIf="sendResults">
+        <h4>Send Results</h4>
+        <div class="results-stats">
+          <div class="stat-card success">
+            <div class="stat-number">{{ sendResults.sent }}</div>
+            <div class="stat-label">Sent Successfully</div>
+          </div>
+          <div class="stat-card failed">
+            <div class="stat-number">{{ sendResults.failed }}</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="stat-card total">
+            <div class="stat-number">{{ sendResults.total }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

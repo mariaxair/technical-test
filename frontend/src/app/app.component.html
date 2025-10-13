@@ -1,0 +1,36 @@
+<div class="app-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h1>📧 Bulk Email Sender</h1>
+    </div>
+    <div class="navbar-menu">
+      <button 
+        [class.active]="currentView === 'templates'" 
+        (click)="setView('templates')">
+        Templates
+      </button>
+      <button 
+        [class.active]="currentView === 'recipients'" 
+        (click)="setView('recipients')">
+        Recipients
+      </button>
+      <button 
+        [class.active]="currentView === 'send'" 
+        (click)="setView('send')">
+        Send Emails
+      </button>
+      <button 
+        [class.active]="currentView === 'history'" 
+        (click)="setView('history')">
+        History
+      </button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <app-templates *ngIf="currentView === 'templates'"></app-templates>
+    <app-recipients *ngIf="currentView === 'recipients'"></app-recipients>
+    <app-send-email *ngIf="currentView === 'send'"></app-send-email>
+    <app-history *ngIf="currentView === 'history'"></app-history>
+  </main>
+</div>
