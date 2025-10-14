@@ -13,10 +13,12 @@ import { ApiService } from '../services/api.services';
 })
 export class HistoryComponent implements OnInit {
   history: any[] = [];
-  filteredHistory: any[] = [];
+  // filteredHistory: any[] = [];
+  page: number = 1;
+  limit: number = 10;
+  pagination: any = {};
   searchTerm: string = '';
   statistics: any = null;
-  limit = 100;
 
   constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) {}
 
@@ -27,12 +29,13 @@ export class HistoryComponent implements OnInit {
 
   loadHistory() {
     console.log('Loading history...');
-    this.apiService.getHistory(this.limit).subscribe({
-      next: (data) => {
-        console.log('History loaded:', data);
-        this.history = data;
-        this.filteredHistory = [...data]; // initialement, pas de filtre
-        this.cdr.detectChanges(); // 🔥 force Angular à mettre à jour la vue immédiatement
+    this.apiService.getHistory(this.page, this.limit, this.searchTerm).subscribe({
+      next: (res) => {
+        console.log('History loaded:', res.data);
+        this.history = res.data;
+        this.pagination = res.pagination;
+        // this.filteredHistory = [...res.data]; // initialement, pas de filtre
+        this.cdr.detectChanges(); // force Angular à mettre à jour la vue immédiatement
       },
       error: (error) => {
         console.error('Error loading history:', error);
@@ -44,22 +47,33 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  loadFilteredHistory() {
-    console.log('Loading filtered history...');
 
-    const term = this.searchTerm.toLowerCase().trim();
-
-    if (!term) {
-      this.filteredHistory = [...this.history]; // aucun filtre encore car term est vide
-      this.cdr.detectChanges();
-      return;
-    }
-    this.filteredHistory = this.history.filter(
-      (h) =>
-        h.recipient_name.toLowerCase().includes(term) ||
-        h.template_name.toLowerCase().includes(term)
-    );
+  onSearchChange() {
+    this.page = 1;
+    this.loadHistory();
     this.cdr.detectChanges();
+  }
+
+  goToPage(page: number) {
+    this.page = page;
+    this.loadHistory();
+    this.cdr.detectChanges();
+  }
+
+  previousPage() {
+    if (this.page > 1) {
+      this.page--;
+      this.loadHistory();
+      this.cdr.detectChanges();
+    }
+  }
+
+  nextPage() {
+    if (this.page < this.pagination.totalPages) {
+      this.page++;
+      this.loadHistory();
+      this.cdr.detectChanges();
+    }
   }
 
   loadStatistics() {

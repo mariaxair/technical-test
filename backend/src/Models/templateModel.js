@@ -3,13 +3,18 @@ export default class TemplateModel {
     this.db = db;
   }
 
-  async getAll({ limit, offset }) {
+  async getAll({ limit, offset, search = "" }) {
+    const searchTerm = `%${search}%`;
+
     const [rows] = await this.db.query(
-      "SELECT * FROM templates ORDER BY created_at DESC LIMIT ? OFFSET ?",
-      [limit, offset]
+      `SELECT * FROM templates where name like ? or subject like ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [searchTerm, searchTerm, limit, offset]
     );
+
     const [[{ total }]] = await this.db.query(
-      "SELECT COUNT(*) AS total FROM templates"
+      `SELECT COUNT(*) AS total FROM templates
+      where name like ? or subject like ?`,
+      [searchTerm, searchTerm]
     );
 
     return { templates: rows, total };

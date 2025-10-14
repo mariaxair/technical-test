@@ -90,15 +90,13 @@ SMTP_PASS=your_app_password
 3. **Setup Database**
 
 ```bash
-mysql -u root -p < database/schema.sql
+mysql -u root -p < DB/bulk_email_db.sql
 ```
 
 4. **Start the Server**
 
 ```bash
 npm start
-# or for development
-npm run dev
 ```
 
 The backend will run on `http://localhost:3000`
@@ -119,7 +117,7 @@ npm install
 ```
 
 3. **Update API URL** (if needed)
-   Edit `src/app/services/api.service.ts` and update the `baseUrl`
+   Edit `src/app/services/api.services.ts` and update the `baseUrl`
 
 4. **Start the Application**
 
@@ -214,7 +212,6 @@ flutter run
 ### Emails
 
 - `POST /api/emails/send-bulk` - Send bulk emails
-- `POST /api/emails/test` - Send test email
 
 ### History
 
@@ -317,15 +314,3 @@ flutter run -d chrome  # For web testing
 - Use device IP address instead of localhost
 - Ensure both devices are on same network
 - Check firewall settings
-
-## License
-
-MIT
-
-## Contributors
-
-Your Name
-
-## Support
-
-For issues and questions, please open an issue on GitHub.

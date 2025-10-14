@@ -3,14 +3,29 @@ export default class RecipientModel {
     this.db = db;
   }
 
-  async getAll() {
+  async getAll({ limit, offset, search = "" }) {
+    const searchTerm = `%${search}%`;
+
     const [rows] = await this.db.query(
-      "SELECT * FROM recipients ORDER BY created_at DESC"
+      `SELECT * FROM recipients 
+      where email like ? or name like ? 
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?`,
+      [searchTerm, searchTerm, limit, offset]
     );
-    return rows;
+
+    const [[{ total }]] = await this.db.query(
+      `SELECT COUNT(*) AS total FROM recipients
+      where name like ? or email like ?`,
+      [searchTerm, searchTerm]
+    );
+
+    return { recipients: rows, total };
   }
 
   async getValid() {
+    // const searchTerm = `%${search}%`;
+
     const [rows] = await this.db.query(
       "SELECT * FROM recipients WHERE is_valid = 1"
     );

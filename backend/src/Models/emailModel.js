@@ -102,18 +102,18 @@ export default class EmailModel {
       return rows;
     }
 
-    if (recipientName) {
-      const [rows] = await this.db.query(
-        "SELECT * FROM recipients WHERE name LIKE ? AND is_valid = 1",
-        [`%${recipientName}%`]
-      );
-      return rows;
-    }
+    // if (recipientName) {
+    //   const [rows] = await this.db.query(
+    //     "SELECT * FROM recipients WHERE name LIKE ? AND is_valid = 1",
+    //     [`%${recipientName}%`]
+    //   );
+    //   return rows;
+    // }
 
-    const [rows] = await this.db.query(
-      "SELECT * FROM recipients WHERE is_valid = 1"
-    );
-    return rows;
+    // const [rows] = await this.db.query(
+    //   "SELECT * FROM recipients WHERE is_valid = 1"
+    // );
+    // return rows;
   }
 
   replaceVariables(text, variables) {

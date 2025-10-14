@@ -9,9 +9,16 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormsModule, CommonModule, TemplateComponent, RecipientComponent, SendEmailComponent, HistoryComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    TemplateComponent,
+    RecipientComponent,
+    SendEmailComponent,
+    HistoryComponent,
+  ],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   currentView = 'templates';

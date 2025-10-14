@@ -8,9 +8,25 @@ const upload = multer({ dest: "uploads/" });
 // GET all recipients
 export const getAllRecipients = async (req, res) => {
   try {
+    //pour pagination
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
+
+    //pour filtre
+    const search = req.query.search || "";
+
     const model = new RecipientModel(req.app.locals.db);
-    const recipients = await model.getAll();
-    res.json(recipients);
+    const { recipients, total } = await model.getAll({ limit, offset, search });
+    res.json({
+      data: recipients,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -19,6 +35,8 @@ export const getAllRecipients = async (req, res) => {
 // GET valid recipients only
 export const getValidRecipients = async (req, res) => {
   try {
+    //pour filtre
+    
     const model = new RecipientModel(req.app.locals.db);
     const recipients = await model.getValid();
     res.json(recipients);

@@ -13,7 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class TemplateComponent implements OnInit {
   templates: any[] = [];
-  filteredTemplates: any[] = []; // liste filtrée
+  //filteredTemplates: any[] = []; // liste filtrée
   searchTerm: string = ''; // texte saisi par l’utilisateur
   page: number = 1;
   limit: number = 10;
@@ -37,11 +37,11 @@ export class TemplateComponent implements OnInit {
 
   loadTemplates() {
     console.log('Loading templates...');
-    this.apiService.getTemplates(this.page, this.limit).subscribe({
+    this.apiService.getTemplates(this.page, this.limit, this.searchTerm).subscribe({
       next: (res) => {
         console.log('Templates loaded:', res.data);
         this.templates = res.data;
-        this.filteredTemplates = [...res.data];
+        // this.filteredTemplates = [...res.data];
         this.pagination = res.pagination;
         this.cdr.detectChanges();
       },
@@ -52,19 +52,14 @@ export class TemplateComponent implements OnInit {
     });
   }
 
-  filterTemplates() {
-    const term = this.searchTerm.toLowerCase().trim();
-    if (!term) {
-      this.filteredTemplates = [...this.templates]; // aucun filtre encore
-      this.cdr.detectChanges();
-      return;
-    }
+  onSearchChange() {
+    this.page = 1;
+    this.loadTemplates();
+  }
 
-    this.filteredTemplates = this.templates.filter(
-      (t) => t.name.toLowerCase().includes(term) || t.subject.toLowerCase().includes(term)
-    );
-
-    this.cdr.detectChanges();
+  goToPage(page: number) {
+    this.page = page;
+    this.loadTemplates();
   }
 
   previousPage() {

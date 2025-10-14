@@ -13,7 +13,10 @@ import { ApiService } from '../services/api.services';
 })
 export class RecipientComponent implements OnInit {
   recipients: any[] = [];
-  filteredRecipients: any[] = [];
+  // filteredRecipients: any[] = [];
+  page: number = 1;
+  limit: number = 10;
+  pagination: any = {};
   searchTerm: string = ''; // texte saisi par l’utilisateur
   showForm = false;
   editingRecipient: any = null;
@@ -34,11 +37,12 @@ export class RecipientComponent implements OnInit {
 
   loadRecipients() {
     console.log('Loading recipients...');
-    this.apiService.getRecipients().subscribe({
-      next: (data) => {
-        console.log('Recipients loaded:', data);
-        this.recipients = data;
-        this.filteredRecipients = [...data];
+    this.apiService.getRecipients(this.page, this.limit, this.searchTerm).subscribe({
+      next: (res) => {
+        console.log('Recipients loaded:', res.data);
+        this.recipients = res.data;
+        this.pagination = res.pagination;
+        // this.filteredRecipients = [...data];
         this.cdr.detectChanges(); // force le rafraîchissement de la vue
       },
       error: (error) => {
@@ -48,21 +52,30 @@ export class RecipientComponent implements OnInit {
     });
   }
 
-  loadFilteredRecipients() {
-    console.log('Loading filtered recipients...');
-    const term = this.searchTerm.toLowerCase().trim();
-    if (!term) {
-      this.filteredRecipients = [...this.recipients]; // aucun filtre encore car term est vide
-      this.cdr.detectChanges();
-      return;
-    }
 
-    this.filteredRecipients = this.recipients.filter(
-      (r) => r.name.toLowerCase().includes(term) || r.email.toLowerCase().includes(term)
-    )
-    this.cdr.detectChanges();
+  onSearchChange() {
+    this.page = 1;
+    this.loadRecipients();
   }
 
+  goToPage(page: number) {
+    this.page = page;
+    this.loadRecipients();
+  }
+
+  previousPage() {
+    if (this.page > 1) {
+      this.page--;
+      this.loadRecipients();
+    }
+  }
+
+  nextPage() {
+    if (this.page < this.pagination.totalPages) {
+      this.page++;
+      this.loadRecipients();
+    }
+  }
   openForm(recipient?: any) {
     if (recipient) {
       this.editingRecipient = recipient;

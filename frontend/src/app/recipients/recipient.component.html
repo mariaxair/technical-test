@@ -17,7 +17,7 @@
       type="text"
       placeholder="Search recipient by name or email ..."
       [(ngModel)]="searchTerm"
-      (input)="loadFilteredRecipients()"
+      (input)="onSearchChange()"
     />
   </div>
 
@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let recipient of filteredRecipients">
+        <tr *ngFor="let recipient of recipients">
           <td>{{ recipient.email }}</td>
           <td>{{ recipient.name || '-' }}</td>
           <td>
@@ -55,6 +55,12 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="pagination">
+    <button (click)="previousPage()" [disabled]="page <= 1">Précédent</button>
+    <span>Page {{ page }} / {{ pagination.totalPages || 1 }}</span>
+    <button (click)="nextPage()" [disabled]="page >= pagination.totalPages">Suivant</button>
   </div>
 
   <div class="modal" *ngIf="showForm">

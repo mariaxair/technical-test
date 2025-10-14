@@ -40,7 +40,7 @@
       type="text"
       placeholder="Search by recipient or template..."
       [(ngModel)]="searchTerm"
-      (input)="loadFilteredHistory()"
+      (input)="onSearchChange()"
     />
   </div>
 
@@ -57,7 +57,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of filteredHistory">
+        <tr *ngFor="let item of history">
           <td>{{ item.sent_at | date : 'short' }}</td>
           <td>{{ item.template_name || '-' }}</td>
           <td>{{ item.template_subject || '-' }}</td>
@@ -89,5 +89,11 @@
     <div class="no-data" *ngIf="history.length === 0">
       <p>No email history found</p>
     </div>
+  </div>
+
+  <div class="pagination">
+    <button (click)="previousPage()" [disabled]="page <= 1">Précédent</button>
+    <span>Page {{ page }} / {{ pagination.totalPages || 1 }}</span>
+    <button (click)="nextPage()" [disabled]="page >= pagination.totalPages">Suivant</button>
   </div>
 </div>

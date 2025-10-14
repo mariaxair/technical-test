@@ -14,9 +14,10 @@ export class ApiService {
   }
 
   // Templates
-  getTemplates(page = 1, limit = 10): Observable<any> {
+  getTemplates(page = 1, limit = 10, search = ''): Observable<any> {
     console.log('API: GET templates');
-    return this.http.get(`${this.baseUrl}/templates?page=${page}&limit=${limit}`).pipe(
+    const params = { page, limit, search };
+    return this.http.get(`${this.baseUrl}/templates`, { params }).pipe(
       tap((data) => console.log('API Response:', data)),
       catchError(this.handleError)
     );
@@ -35,9 +36,10 @@ export class ApiService {
   }
 
   // Recipients
-  getRecipients(): Observable<any> {
+  getRecipients(page = 1, limit = 10, search = ''): Observable<any> {
     console.log('API: GET recipients');
-    return this.http.get(`${this.baseUrl}/recipients`).pipe(
+    const params = { page, limit, search };
+    return this.http.get(`${this.baseUrl}/recipients`, { params }).pipe(
       tap((data) => console.log('API Response:', data)),
       catchError(this.handleError)
     );
@@ -81,9 +83,12 @@ export class ApiService {
   }
 
   // History
-  getHistory(limit?: number): Observable<any> {
-    const params = limit ? `?limit=${limit}` : '';
-    return this.http.get(`${this.baseUrl}/history${params}`);
+  getHistory(page = 1, limit = 10, search = ''): Observable<any> {
+    const params = { page, limit, search };
+    return this.http.get(`${this.baseUrl}/history`, { params }).pipe(
+      tap((data) => console.log('API Response:', data)),
+      catchError(this.handleError)
+    );
   }
 
   getStatistics(): Observable<any> {

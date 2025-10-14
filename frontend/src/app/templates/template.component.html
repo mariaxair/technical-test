@@ -9,12 +9,12 @@
       type="text"
       placeholder="Search templates by name or subject..."
       [(ngModel)]="searchTerm"
-      (input)="filterTemplates()"
+      (input)="onSearchChange()"
     />
   </div>
 
   <div class="templates-grid">
-    <div class="template-card" *ngFor="let template of filteredTemplates">
+    <div class="template-card" *ngFor="let template of templates">
       <h3>{{ template.name }}</h3>
       <p class="subject"><strong>Subject:</strong> {{ template.subject }}</p>
       <p class="date">Created: {{ template.created_at | date }}</p>

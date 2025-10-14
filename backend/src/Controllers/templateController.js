@@ -3,12 +3,17 @@ import TemplateModel from "../Models/templateModel.js";
 // GET all templates
 export const getAllTemplates = async (req, res) => {
   try {
+    //pour pagination
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const offset = (page - 1) * limit;
 
+    //pour filtre
+    const search = req.query.search || "";
+
+    //appel au modele
     const model = new TemplateModel(req.app.locals.db);
-    const { templates, total } = await model.getAll({ limit, offset });
+    const { templates, total } = await model.getAll({ limit, offset, search });
     res.json({
       data: templates,
       pagination: {
@@ -22,22 +27,6 @@ export const getAllTemplates = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// // GET template by ID
-// export const getTemplateByName = async (req, res) => {
-//   try {
-//     const model = new TemplateModel(req.app.locals.db);
-//     const template = await model.getByName(req.params.name);
-
-//     if (!template) {
-//       return res.status(404).json({ error: "Template not found" });
-//     }
-
-//     res.json(template);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 
 // POST create new template
 export const createTemplate = async (req, res) => {
