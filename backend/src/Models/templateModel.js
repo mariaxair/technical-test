@@ -7,7 +7,7 @@ export default class TemplateModel {
     const searchTerm = `%${search}%`;
 
     const [rows] = await this.db.query(
-      `SELECT * FROM templates where name like ? or subject like ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      `SELECT * FROM templates where name like ? or subject like ? ORDER BY name ASC LIMIT ? OFFSET ?`,
       [searchTerm, searchTerm, limit, offset]
     );
 
