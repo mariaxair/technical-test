@@ -20,6 +20,11 @@ export default class TemplateModel {
     return { templates: rows, total };
   }
 
+  async getAllForSelection() {
+    const [rows] = await this.db.query("select * from templates order by name");
+    return rows;
+  }
+
   async getById(id) {
     const [rows] = await this.db.query("SELECT * FROM templates WHERE id = ?", [
       id,

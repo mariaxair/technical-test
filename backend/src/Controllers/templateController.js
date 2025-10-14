@@ -28,6 +28,16 @@ export const getAllTemplates = async (req, res) => {
   }
 };
 
+export const getTemplateForSelection = async (req, res) => {
+  try {
+    const model = new TemplateModel(req.app.locals.db);
+    const templates = await model.getAllForSelection();
+    res.json(templates);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // POST create new template
 export const createTemplate = async (req, res) => {
   try {

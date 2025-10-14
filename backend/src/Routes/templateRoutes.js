@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getAllTemplates,
+  getTemplateForSelection,
   createTemplate,
   updateTemplate,
   deleteTemplate,
@@ -9,7 +10,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAllTemplates);
-// router.get("/:name", getTemplateByName);
+router.get("/selection", getTemplateForSelection);
 router.post("/", createTemplate);
 router.put("/:id", updateTemplate);
 router.delete("/:id", deleteTemplate);

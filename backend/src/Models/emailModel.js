@@ -5,8 +5,8 @@ export default class EmailModel {
     this.db = db;
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: process.env.SMTP_PORT || 465,
-      secure: true,
+      port: process.env.SMTP_PORT || 587,
+      secure: false,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -56,7 +56,7 @@ export default class EmailModel {
 
         // envoi
         await this.transporter.sendMail({
-          from: `"NIGABOB" <no-reply@tondomaine.com>`,
+          from: `"NIGABOB" <no-reply@gmail.com>`,
           to: recipient.email,
           subject: this.replaceVariables(template.subject, metadata),
           html: personalizedBody,
@@ -102,18 +102,18 @@ export default class EmailModel {
       return rows;
     }
 
-    // if (recipientName) {
-    //   const [rows] = await this.db.query(
-    //     "SELECT * FROM recipients WHERE name LIKE ? AND is_valid = 1",
-    //     [`%${recipientName}%`]
-    //   );
-    //   return rows;
-    // }
+    if (recipientName) {
+      const [rows] = await this.db.query(
+        "SELECT * FROM recipients WHERE name LIKE ? AND is_valid = 1",
+        [`%${recipientName}%`]
+      );
+      return rows;
+    }
 
-    // const [rows] = await this.db.query(
-    //   "SELECT * FROM recipients WHERE is_valid = 1"
-    // );
-    // return rows;
+    const [rows] = await this.db.query(
+      "SELECT * FROM recipients WHERE is_valid = 1"
+    );
+    return rows;
   }
 
   replaceVariables(text, variables) {

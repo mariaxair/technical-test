@@ -23,6 +23,14 @@ export class ApiService {
     );
   }
 
+  getTemplatesForSelection(): Observable<any> {
+    console.log('API: GET templates');
+    return this.http.get(`${this.baseUrl}/templates/selection`).pipe(
+      tap((data) => console.log('API Response:', data)),
+      catchError(this.handleError)
+    );
+  }
+
   createTemplate(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/templates`, data);
   }

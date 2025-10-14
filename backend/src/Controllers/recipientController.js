@@ -34,9 +34,7 @@ export const getAllRecipients = async (req, res) => {
 
 // GET valid recipients only
 export const getValidRecipients = async (req, res) => {
-  try {
-    //pour filtre
-    
+  try {    
     const model = new RecipientModel(req.app.locals.db);
     const recipients = await model.getValid();
     res.json(recipients);

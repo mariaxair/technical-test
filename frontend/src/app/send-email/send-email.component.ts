@@ -30,9 +30,9 @@ export class SendEmailComponent implements OnInit {
   }
 
   loadTemplates() {
-    this.apiService.getTemplates().subscribe(
-      (res) => {
-        this.templates = Array.isArray(res.data) ? res.data : res; // vu le type de données renvoyées par l'API
+    this.apiService.getTemplatesForSelection().subscribe(
+      (data) => {
+        this.templates = data; // vu le type de données renvoyées par l'API
         this.cdr.detectChanges();
       },
       (error) => console.error('Error loading templates:', error)
@@ -42,9 +42,9 @@ export class SendEmailComponent implements OnInit {
 
   loadRecipients() {
     this.apiService.getValidRecipients().subscribe(
-      (res) => {
-        this.recipients = Array.isArray(res.data) ? res.data : res;
-        this.filterdRecipients = [...(Array.isArray(res.data) ? res.data : res)]; // initialement, pas de filtre
+      (data) => {
+        this.recipients = data;
+        this.filterdRecipients = [...data]; // initialement, pas de filtre
         this.cdr.detectChanges();
       },
       (error) => console.error('Error loading recipients:', error)
