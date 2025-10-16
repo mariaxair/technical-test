@@ -52,7 +52,6 @@ export class RecipientComponent implements OnInit {
     });
   }
 
-
   onSearchChange() {
     this.page = 1;
     this.loadRecipients();
@@ -96,22 +95,33 @@ export class RecipientComponent implements OnInit {
 
   saveRecipient() {
     if (this.editingRecipient) {
+      // Update existing recipient
       this.apiService.updateRecipient(this.editingRecipient.id, this.formData).subscribe({
         next: () => {
           this.loadRecipients();
           this.closeForm();
         },
-        error: (err) => console.error('Error updating recipient:', err),
+        error: (err) => {
+          const message = err.error?.error || 'Error updating recipient. Please try again.';
+          alert(message); // ✅ show user-friendly error message
+          console.error('Error updating recipient:', err);
+        },
       });
     } else {
+      // Create new recipient
       this.apiService.createRecipient(this.formData).subscribe({
         next: () => {
           this.loadRecipients();
           this.closeForm();
         },
-        error: (err) => console.error('Error creating recipient:', err),
+        error: (err) => {
+          const message = err.error?.error || 'Error creating recipient. Please try again.';
+          alert(message); // ✅ display Kickbox / invalid email error
+          console.error('Error creating recipient:', err);
+        },
       });
     }
+
     this.cdr.detectChanges();
   }
 

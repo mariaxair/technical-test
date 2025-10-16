@@ -34,7 +34,7 @@ export const getAllRecipients = async (req, res) => {
 
 // GET valid recipients only
 export const getValidRecipients = async (req, res) => {
-  try {    
+  try {
     const model = new RecipientModel(req.app.locals.db);
     const recipients = await model.getValid();
     res.json(recipients);
@@ -69,11 +69,21 @@ export const createRecipient = async (req, res) => {
     }
 
     const model = new RecipientModel(req.app.locals.db);
+
+    // Validate email before creating
+    try {
+      await model.validateEmail(email);
+    } catch (validationError) {
+      return res.status(400).json({ error: validationError.message });
+    }
+
+    // If validation passes, create the recipient
     const recipient = await model.create({ email, name, metadata });
 
     res.status(201).json(recipient);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("❌ Error creating recipient:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
   }
 };
 

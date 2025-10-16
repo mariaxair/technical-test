@@ -40,22 +40,19 @@ export default class RecipientModel {
     return rows[0];
   }
 
-  async create(data) {
-    const { email, name, metadata } = data;
-
-    // wait for validation before inserting
+  async create({ email, name, metadata }) {
+    // Validate email before inserting
     const isValid = await this.validateEmail(email);
+    if (!isValid) {
+      throw new Error(`Email not deliverable: ${email}`);
+    }
 
     const [result] = await this.db.query(
       "INSERT INTO recipients (email, name, metadata, is_valid) VALUES (?, ?, ?, ?)",
       [email, name, JSON.stringify(metadata || {}), isValid ? 1 : 0]
     );
 
-    return {
-      id: result.insertId,
-      ...data,
-      is_valid: isValid,
-    };
+    return { id: result.insertId, email, name, metadata };
   }
 
   // if we bring them from a csv file
@@ -104,36 +101,29 @@ export default class RecipientModel {
 
   //from gpt
   async validateEmail(email) {
-    // Step 1: basic regex check (fast local filter)
+    // Step 1: Basic regex check (local validation)
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email)) {
       console.warn(`❌ Invalid email format: ${email}`);
-      return false;
+      throw new Error(`Invalid email format: ${email}`); // ❗ Use throw instead of return false
     }
 
-    // Step 2: optional Kickbox verification
+    // Step 2: Kickbox verification
     try {
-      const res = await axios.get(`https://api.kickbox.com/v2/verify`, {
-        params: {
-          email,
-          apikey: process.env.KICKBOX_API_KEY,
-        },
+      const res = await axios.get("https://api.kickbox.com/v2/verify", {
+        params: { email, apikey: process.env.KICKBOX_API_KEY },
       });
 
-      // Possible results: "deliverable", "undeliverable", "risky", "unknown"
-      if (res.data.result === "deliverable") {
-        console.log(`✅ Email deliverable: ${email}`);
-        return true;
-      } else {
+      if (res.data.result !== "deliverable") {
         console.warn(`⚠️ Email not deliverable (${res.data.result}): ${email}`);
-        return false;
+        return false; // ✅ Return false instead of throwing
       }
+
+      console.log(`✅ Email deliverable: ${email}`);
+      return true;
     } catch (err) {
       console.error("⚠️ Kickbox verification failed:", err.message);
-      // You can choose what to do if Kickbox API fails:
-      // return false;  → reject if uncertain
-      // return true;   → accept temporarily
-      return true;
+      return false; // safer — don’t insert if uncertain
     }
   }
 }
