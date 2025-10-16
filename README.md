@@ -132,7 +132,7 @@ KICKBOX_API_KEY=your_api_password
 **⚠️ Important for KICKBOX API key:**
 
 1. Create an account on https://docs.kickbox.com/docs/using-the-api
-2. Go to Dashboard > API > Manage Keys > create your app key
+2. Go to Dashboard > API > Manage Keys > Select production mode then create your app key
 3. Use the generated password (live\_**\*\*\*\***\***\*\*\*\***)
 
 #### 3️⃣ Setup MySQL database
