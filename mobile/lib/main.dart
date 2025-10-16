@@ -55,7 +55,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           InAppWebView(
             initialUrlRequest: URLRequest(
               // Replace this with your computer's local IP
-              url: WebUri("http://192.168.1.75:4200"),
+              url: WebUri("http://192.168.1.0:4200"),
             ),
             initialSettings: InAppWebViewSettings(
               javaScriptEnabled: true,
