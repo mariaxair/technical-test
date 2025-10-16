@@ -1,27 +1,31 @@
 <div class="app-container">
   <nav class="navbar">
-    <div class="navbar-brand">
-      <h1>📧 Bulk Email Sender</h1>
+    <div class="navbar-left">
+      <button class="menu-toggle" (click)="toggleMenu()">☰</button>
+      <div class="navbar-brand">
+        <h1>📧 Bulk Email Sender</h1>
+      </div>
     </div>
-    <div class="navbar-menu">
-      <button 
-        [class.active]="currentView === 'templates'" 
-        (click)="setView('templates')">
+
+    <div class="navbar-menu" [class.active]="menuOpen">
+      <button
+        [class.active]="currentView === 'templates'"
+        (click)="setView('templates'); toggleMenu(false)">
         Templates
       </button>
-      <button 
-        [class.active]="currentView === 'recipients'" 
-        (click)="setView('recipients')">
+      <button
+        [class.active]="currentView === 'recipients'"
+        (click)="setView('recipients'); toggleMenu(false)">
         Recipients
       </button>
-      <button 
-        [class.active]="currentView === 'send'" 
-        (click)="setView('send')">
+      <button
+        [class.active]="currentView === 'send'"
+        (click)="setView('send'); toggleMenu(false)">
         Send Emails
       </button>
-      <button 
-        [class.active]="currentView === 'history'" 
-        (click)="setView('history')">
+      <button
+        [class.active]="currentView === 'history'"
+        (click)="setView('history'); toggleMenu(false)">
         History
       </button>
     </div>

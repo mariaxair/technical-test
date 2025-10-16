@@ -26,4 +26,10 @@ export class AppComponent {
   setView(view: string) {
     this.currentView = view;
   }
+
+  menuOpen = false;
+
+  toggleMenu(forceState?: boolean) {
+    this.menuOpen = typeof forceState === 'boolean' ? forceState : !this.menuOpen;
+  }
 }

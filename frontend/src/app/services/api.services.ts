@@ -7,8 +7,9 @@ import { catchError, tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:3000/api';
-
+  // private baseUrl = 'http://localhost:3000/api'; //for local
+  // private baseUrl = 'http://10.0.2.2:3000/api'; //for emulation
+  private baseUrl = 'http://192.168.1.75:3000/api'; //replace with your ip
   constructor(private http: HttpClient) {
     console.log('ApiService initialized with baseUrl:', this.baseUrl);
   }

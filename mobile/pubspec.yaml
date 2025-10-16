@@ -1,4 +1,4 @@
-name: bulk_email_sender
+name: mobile
 description: Bulk Email Sender Mobile Application
 publish_to: 'none'
 version: 1.0.0+1
@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   webview_flutter: ^4.4.0
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:
