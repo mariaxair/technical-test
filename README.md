@@ -146,9 +146,11 @@ mysql -u root -p < src/DB/bulk_email_db.sql
 Or manually:
 
 ```sql
+mysql -u root -p
+password:
 CREATE DATABASE bulk_email_db;
 USE bulk_email_db;
--- Then copy/paste the content of schema.sql
+>mysql-- Then copy/paste the content of schema.sql
 ```
 
 #### 4️⃣ Start the backend server
