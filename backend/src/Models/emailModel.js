@@ -56,7 +56,7 @@ export default class EmailModel {
 
         // envoi
         await this.transporter.sendMail({
-          from: `"NIGABOB" <no-reply@gmail.com>`,
+          from: `"SEAAL" <no-reply@gmail.com>`,
           to: recipient.email,
           subject: this.replaceVariables(template.subject, metadata),
           html: personalizedBody,

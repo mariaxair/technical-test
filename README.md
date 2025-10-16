@@ -150,7 +150,7 @@ mysql -u root -p
 password:
 CREATE DATABASE bulk_email_db;
 USE bulk_email_db;
->mysql-- Then copy/paste the content of schema.sql
+>mysql-- Then copy/paste the content of bulk_email_db.sql
 ```
 
 #### 4️⃣ Start the backend server
@@ -165,7 +165,6 @@ You should see:
 
 ```
 Server is running on port 3000
-✅ SMTP connection verified successfully
 ```
 
 ---
@@ -187,31 +186,16 @@ npm install
 
 #### 3️⃣ Configure API URL
 
-**Option A: For web browser access**
-
-Keep default in `src/app/services/api.service.ts`:
+Use your IP address in `src/app/services/api.services.ts`:
 
 ```typescript
-private baseUrl = 'http://localhost:3000/api';
+private baseUrl = 'http://YOUR_LOCAL_IP:3000/api';// e.g., http://192.168.1.10:3000/api
 ```
 
-**Option B: For mobile device access**
-
-Create `src/environments/environment.ts`:
+Or for Android Emulator for later if you wish:
 
 ```typescript
-export const environment = {
-  production: false,
-  apiUrl: "http://YOUR_LOCAL_IP:3000/api", // e.g., http://192.168.1.10:3000/api
-};
-```
-
-And update `api.service.ts`:
-
-```typescript
-import { environment } from '../environments/environment';
-
-private baseUrl = environment.apiUrl;
+private baseUrl = 'http://10.0.2.2:3000/api';// e.g., http://192.168.1.10:3000/api
 ```
 
 #### 4️⃣ Run the Angular app
@@ -226,7 +210,9 @@ Or for mobile access:
 ng serve --host 0.0.0.0
 ```
 
-Frontend will be accessible at: **http://localhost:4200**
+Frontend will be accessible at:
+Local: **http://localhost:4200**
+Network: **http://YOUR_LOCAL_IP:4200** <!-- appears only if you use the mobile command  -->
 
 ---
 
@@ -271,6 +257,8 @@ Edit `mobile/android/app/src/main/AndroidManifest.xml`:
     <!-- Add these permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
     <application
         android:label="Bulk Email Sender"
@@ -326,10 +314,18 @@ flutter run
 2. Enable **USB Debugging** in Developer Options
 3. Connect phone via USB
 4. Run:
+
    ```bash
    flutter devices
-   flutter run
    ```
+
+   Detect your device, you should get something like "SM M236B (mobile) • RFCT310MNYZ"
+
+   ```bash
+   flutter run -d RFCT310MNYZ
+   ```
+
+   Replace RFCT310MNYZ with your actual reference
 
 ---
 
@@ -378,7 +374,7 @@ Transfer this file to your Android device and install it.
 | created_at | DATETIME | Creation timestamp      |
 | updated_at | DATETIME | Last update timestamp   |
 
-### **email_history**
+### **history**
 
 | Column        | Type                  | Description        |
 | :------------ | :-------------------- | :----------------- |
@@ -420,7 +416,6 @@ Transfer this file to your Android device and install it.
 | Method | Endpoint                | Description      |
 | :----- | :---------------------- | :--------------- |
 | POST   | `/api/emails/send-bulk` | Send bulk emails |
-| POST   | `/api/emails/test`      | Send test email  |
 
 ### 📊 History
 
@@ -583,45 +578,6 @@ flutter build apk
 UPDATE recipients SET metadata = '{}' WHERE metadata = '[object Object]';
 ```
 
----
-
-## 💡 Tips & Best Practices
-
-### Performance Optimization
-
-- Import recipients in batches (max 1000 at a time)
-- Use email validation to avoid bounces
-- Implement rate limiting for bulk sends
-
-### Email Deliverability
-
-- Use clear, descriptive subject lines
-- Test templates before bulk sending
-- Include unsubscribe links (for production)
-- Monitor spam scores
-
-### Security
-
-- Never commit `.env` file
-- Use strong database passwords
-- Implement authentication in production
-- Sanitize user inputs
-
-### Development
-
-```bash
-# Update all dependencies
-npm update                    # Backend & Frontend
-flutter pub upgrade          # Mobile
-
-# Clear caches
-ng cache clean               # Angular
-flutter clean                # Flutter
-rm -rf node_modules          # Node.js
-```
-
----
-
 ## 📚 Additional Resources
 
 - **Node.js Documentation:** https://nodejs.org/docs
@@ -629,29 +585,3 @@ rm -rf node_modules          # Node.js
 - **Flutter Documentation:** https://flutter.dev/docs
 - **Nodemailer Guide:** https://nodemailer.com/about/
 - **MySQL Reference:** https://dev.mysql.com/doc/
-
----
-
-## 📄 License
-
-MIT License - Feel free to use this project for educational or commercial purposes.
-
----
-
-## 👨‍💻 Author
-
-Built with ❤️ for a technical assessment  
-Using Node.js, Angular, MySQL & Flutter
-
----
-
-## 🙏 Acknowledgments
-
-- Nodemailer for SMTP integration
-- Angular team for the framework
-- Flutter team for mobile development tools
-- MySQL community for database support
-
----
-
-**Happy Emailing! 📧**
