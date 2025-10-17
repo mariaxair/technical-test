@@ -96,6 +96,8 @@ technical_test/
 
 ### 🖥️ Backend (Node.js)
 
+Install Node.js and add `C:\Program Files\nodejs` in environment variables.
+
 #### 1️⃣ Install dependencies
 
 ```bash
@@ -139,8 +141,8 @@ KICKBOX_API_KEY=your_api_password
 #### 3️⃣ Setup MySQL database
 
 1. Install MySQL latest version (9.4) from https://dev.mysql.com/downloads/mysql/?platform&os=3
-
-2. Make sure MySQL is running, then execute manually:
+2. Add `C:\Program Files\MySQL\MySQL Server 9.4\bin` into environement variables > PATH.
+3. Make sure MySQL is running, then execute manually:
 
 ```sql
 mysql -u root -p
