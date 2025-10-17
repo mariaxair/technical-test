@@ -21,10 +21,11 @@ Designed to manage email templates, recipients, and automate mass sending with v
 | Layer        | Stack                     |
 | :----------- | :------------------------ |
 | **Backend**  | Node.js + Express         |
+| **SMTP**     | Gmail (with App Password) |
+| **KICKBOX**  | Email validation          |
 | **Frontend** | Angular                   |
 | **Database** | MySQL                     |
 | **Mobile**   | Flutter (WebView)         |
-| **SMTP**     | Gmail (with App Password) |
 
 ---
 
@@ -104,7 +105,7 @@ npm install
 
 #### 2️⃣ Configure environment variables
 
-Create a `.env` file in the `backend/` directory:
+Open the `.env` file in the `backend/` directory and set it with your personal infos:
 
 ```env
 PORT=3000
@@ -136,8 +137,10 @@ KICKBOX_API_KEY=your_api_password
 3. Use the generated password (live\_**\*\*\*\***\***\*\*\*\***)
 
 #### 3️⃣ Setup MySQL database
-Install the latest version of MySQL from https://dev.mysql.com/downloads/mysql/?platform&os=3
-Make sure MySQL is running, then execute manually:
+
+1. Install MySQL latest version (9.4) from https://dev.mysql.com/downloads/mysql/?platform&os=3
+
+2. Make sure MySQL is running, then execute manually:
 
 ```sql
 mysql -u root -p
@@ -195,18 +198,12 @@ private baseUrl = 'http://10.0.2.2:3000/api';
 #### 4️⃣ Run the Angular app
 
 ```bash
-ng serve
-```
-
-Or for mobile access:
-
-```bash
 ng serve --host 0.0.0.0
 ```
 
 Frontend will be accessible at:
-Local: **http://localhost:4200**
-Network: **http://YOUR_LOCAL_IP:4200** <!-- appears only if you use the mobile command  -->
+Local: **http://localhost:4200** <!-- click on this if you want it on local -->
+Network: **http://YOUR_LOCAL_IP:4200**
 
 ---
 
@@ -370,14 +367,18 @@ Transfer this file to your Android device and install it.
 
 ### **history**
 
-| Column        | Type                  | Description        |
-| :------------ | :-------------------- | :----------------- |
-| id            | INT                   | Primary key (auto) |
-| template_id   | INT                   | FK → templates     |
-| recipient_id  | INT                   | FK → recipients    |
-| status        | ENUM('sent','failed') | Send status        |
-| error_message | TEXT                  | Error details      |
-| sent_at       | DATETIME              | Sending timestamp  |
+| Column           | Type                  | Description        |
+| :--------------- | :-------------------- | :----------------- |
+| id               | INT                   | Primary key (auto) |
+| template_id      | INT                   | FK → templates     |
+| template_name    | VARCHAR               | Template name      |
+| template_subject | VARCHAR               | Template subject   |
+| recipient_id     | INT                   | FK → recipients    |
+| recipient_name   | VARCHAR               | Recipient name     |
+| recipient_email  | VARCHAR               | Recipient Email    |
+| status           | ENUM('sent','failed') | Send status        |
+| error_message    | TEXT                  | Error details      |
+| sent_at          | DATETIME              | Sending timestamp  |
 
 ---
 
@@ -454,16 +455,15 @@ Transfer this file to your Android device and install it.
    ```
 2. Click **Import CSV**
 3. Select your file
-4. Recipients will be imported and validated
+4. Recipients will be validated then imported
 
 ### 3. Send Bulk Emails
 
 1. Navigate to **Send Emails** section
 2. Select a template
-3. (Optional) Send test email to verify
-4. Select recipients (or select all)
-5. Click **Send Bulk Emails**
-6. Confirm and wait for completion
+3. Select recipients (or select all)
+4. Click **Send Bulk Emails**
+5. Confirm and wait for completion
 
 ### 4. View History
 
@@ -501,17 +501,6 @@ DB_PASSWORD=your_actual_password
 ```
 
 ### ❌ Frontend Issues
-
-**CORS errors:**
-
-```bash
-# Backend already includes cors middleware
-# If issues persist, explicitly allow your frontend origin in server.js:
-
-app.use(cors({
-  origin: 'http://localhost:4200'
-}));
-```
 
 **API calls failing:**
 
@@ -563,13 +552,6 @@ flutter build apk
 2. Gmail blocking "less secure apps" (use App Password)
 3. Network firewall blocking SMTP port 587
 4. Daily sending limit reached (Gmail: 500/day)
-```
-
-**Metadata parsing error:**
-
-```bash
-# Fix database entries with invalid metadata:
-UPDATE recipients SET metadata = '{}' WHERE metadata = '[object Object]';
 ```
 
 ## 📚 Additional Resources
