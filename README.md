@@ -202,8 +202,11 @@ ng serve --host 0.0.0.0
 ```
 
 Frontend will be accessible at:
-1. Local: **http://localhost:4200** <!-- click on this if you want it on local -->
-2. Network: **http://YOUR_LOCAL_IP:4200**
+
+```bash
+ Local: **http://localhost:4200** // click on this if you want it on local
+ Network: **http://YOUR_LOCAL_IP:4200**
+```
 
 ---
 
