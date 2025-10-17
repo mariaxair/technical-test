@@ -189,7 +189,7 @@ private baseUrl = 'http://YOUR_LOCAL_IP:3000/api';// e.g., http://192.168.1.10:3
 Or for Android Emulator for later if you wish:
 
 ```typescript
-private baseUrl = 'http://10.0.2.2:3000/api';// e.g., http://192.168.1.10:3000/api
+private baseUrl = 'http://10.0.2.2:3000/api';
 ```
 
 #### 4️⃣ Run the Angular app
