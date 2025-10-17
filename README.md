@@ -136,14 +136,8 @@ KICKBOX_API_KEY=your_api_password
 3. Use the generated password (live\_**\*\*\*\***\***\*\*\*\***)
 
 #### 3️⃣ Setup MySQL database
-
-Make sure MySQL is running, then execute:
-
-```bash
-mysql -u root -p < src/DB/bulk_email_db.sql
-```
-
-Or manually:
+Install the latest version of MySQL from https://dev.mysql.com/downloads/mysql/?platform&os=3
+Make sure MySQL is running, then execute manually:
 
 ```sql
 mysql -u root -p
