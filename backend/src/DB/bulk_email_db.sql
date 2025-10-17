@@ -30,18 +30,26 @@ CREATE TABLE IF NOT EXISTS recipients (
 CREATE TABLE IF NOT EXISTS history (
   id INT AUTO_INCREMENT PRIMARY KEY,
   template_id INT,
+  template_name VARCHAR(50),
+  template_subject VARCHAR(100),
   recipient_id INT,
+  recipient_name VARCHAR(50),
+  recipient_email VARCHAR(255),
   status ENUM('sent', 'failed') NOT NULL,
   error_message TEXT,
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE,
-  FOREIGN KEY (recipient_id) REFERENCES recipients(id) ON DELETE CASCADE,
+  FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE SET NULL ,
+  FOREIGN KEY (recipient_id) REFERENCES recipients(id) ON DELETE SET NULL,
   INDEX idx_template_id (template_id),
   INDEX idx_recipient_id (recipient_id),
   INDEX idx_status (status),
   INDEX idx_sent_at (sent_at)
 );
 
+
+
+
+  
 -- Insert sample data
 INSERT INTO templates (name, subject, body, variables) VALUES
 ('Welcome Email', 'Welcome to Our Platform!', '<h1>Hello {{name}}!</h1><p>Welcome to our platform. We are glad to have you.</p>', '["name"]'),
@@ -51,3 +59,4 @@ INSERT INTO recipients (email, name, metadata, is_valid) VALUES
 ('test1@example.com', 'John Doe', '{"company": "ABC Corp"}', TRUE),
 ('test2@example.com', 'Jane Smith', '{"company": "XYZ Ltd"}', TRUE),
 ('invalid-email', 'Invalid User', '{}', FALSE);
+

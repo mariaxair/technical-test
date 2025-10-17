@@ -28,17 +28,15 @@ export default class HistoryModel {
     //cette version garde mm les lignes supprimees avec des NULL dans les colonnes des tables jointes (templates et recipients)
     const [rows] = await this.db.query(
       `select
-        t.name as template_name,
-        t.subject as template_subject,
-        r.email as recipient_email, 
-        r.name as recipient_name, 
+        h.template_name as template_name,
+        h.template_subject as template_subject,
+        h.recipient_name as recipient_name,
+        h.recipient_email as recipient_email,
         h.status , 
         h.error_message, 
         h.sent_at
       from history h 
-      left join templates t on h.template_id = t.id
-      left join recipients r on h.recipient_id = r.id  
-      where t.name like ? or t.subject like ? or r.name like ? or r.email like ?
+      where h.template_name like ? or h.template_subject like ? or h.recipient_name like ? or h.recipient_email like ?
       order by h.sent_at desc
       limit ? offset ?`,
       [searchTerm, searchTerm, searchTerm, searchTerm, limit, offset]
@@ -47,13 +45,11 @@ export default class HistoryModel {
     const [countRows] = await this.db.query(
       `SELECT COUNT(*) AS total
      FROM history h
-     LEFT JOIN templates t ON h.template_id = t.id
-     LEFT JOIN recipients r ON h.recipient_id = r.id
      WHERE
-       t.name LIKE ? OR
-       t.subject LIKE ? OR
-       r.name LIKE ? OR
-       r.email LIKE ?`,
+       h.template_name LIKE ? OR
+       h.template_subject LIKE ? OR
+       h.recipient_name LIKE ? OR
+       h.recipient_email LIKE ?`,
       [searchTerm, searchTerm, searchTerm, searchTerm]
     );
 

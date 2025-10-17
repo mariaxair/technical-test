@@ -62,14 +62,27 @@ export default class EmailModel {
           html: personalizedBody,
         });
 
-        await this.logEmail(templateId, recipient.id, "sent", null);
+        await this.logEmail(
+          templateId,
+          template.name,
+          template.subject,
+          recipient.id,
+          recipient.name,
+          recipient.email,
+          "sent",
+          null
+        );
         results.sent++;
         results.details.push({ email: recipient.email, status: "sent" });
       } catch (error) {
         console.error("❌ Error sending email:", error);
         await this.logEmail(
           templateId,
+          template.name,
+          template.subject,
           recipient.id,
+          recipient.name,
+          recipient.email,
           "failed",
           error.message || JSON.stringify(error)
         );
@@ -126,10 +139,28 @@ export default class EmailModel {
     });
   }
 
-  async logEmail(templateId, recipientId, status, error) {
+  async logEmail(
+    templateId,
+    templateName,
+    templateSubject,
+    recipientId,
+    recipientName,
+    recipientEmail,
+    status,
+    error
+  ) {
     await this.db.query(
-      "INSERT INTO history (template_id, recipient_id, status, error_message) VALUES (?, ?, ?, ?)",
-      [templateId, recipientId, status, error]
+      "INSERT INTO history (template_id, template_name, template_subject, recipient_id, recipient_name, recipient_email, status, error_message) VALUES (?, ?,?, ?, ?, ?, ?, ?)",
+      [
+        templateId,
+        templateName,
+        templateSubject,
+        recipientId,
+        recipientName,
+        recipientEmail,
+        status,
+        error,
+      ]
     );
   }
 }

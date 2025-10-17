@@ -109,26 +109,43 @@ export const importRecipientsFromCSV = [
           });
         })
         .on("end", async () => {
+          const model = new RecipientModel(req.app.locals.db);
+
           try {
-            const model = new RecipientModel(req.app.locals.db);
             const result = await model.bulkCreate(recipients);
 
-            // Suppression du fichier après import
+            // Supprimer le fichier après lecture
             fs.unlinkSync(req.file.path);
 
-            res.json({
-              message: "Recipients imported successfully",
-              ...result,
+            // ✅ Réponse améliorée : inclut les emails invalides ignorés
+            res.status(200).json({
+              message: result.message,
+              insertedCount: result.insertedCount,
+              skipped: result.skipped || [],
             });
           } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error("❌ Error during bulk import:", error.message);
+            res.status(500).json({
+              error: "Error during bulk import",
+              details: error.message,
+            });
           }
         })
         .on("error", (err) => {
-          res.status(500).json({ error: `Error parsing CSV: ${err.message}` });
+          console.error("❌ Error parsing CSV:", err.message);
+          res.status(500).json({
+            error: `Error parsing CSV: ${err.message}`,
+          });
         });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(
+        "❌ General error in importRecipientsFromCSV:",
+        error.message
+      );
+      res.status(500).json({
+        error: "Server error",
+        details: error.message,
+      });
     }
   },
 ];

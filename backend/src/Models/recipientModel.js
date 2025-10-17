@@ -57,41 +57,52 @@ export default class RecipientModel {
 
   // if we bring them from a csv file
   async bulkCreate(recipients) {
-    const values = [];
+    const validValues = [];
+    const invalidEmails = [];
 
     for (const r of recipients) {
-      const isValid = await this.validateEmail(r.email);
-      values.push([
-        r.email,
-        r.name || "",
-        JSON.stringify(r.metadata || {}),
-        isValid ? 1 : 0,
-      ]);
+      try {
+        const isValid = await this.validateEmail(r.email);
+
+        if (isValid) {
+          validValues.push([
+            r.email,
+            r.name || "",
+            JSON.stringify(r.metadata || {}),
+            1, // is_valid = true
+          ]);
+        } else {
+          invalidEmails.push(r.email);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Error validating email ${r.email}: ${error.message}`);
+        invalidEmails.push(r.email);
+      }
     }
 
-    const placeholders = values.map(() => "(?, ?, ?, ?)").join(",");
-    const flatValues = values.flat();
+    // If no valid emails, return message early
+    if (validValues.length === 0) {
+      return {
+        insertedCount: 0,
+        skipped: invalidEmails,
+        message: "No valid recipients found — all skipped.",
+      };
+    }
+
+    // Prepare query
+    const placeholders = validValues.map(() => "(?, ?, ?, ?)").join(",");
+    const flatValues = validValues.flat();
 
     const [result] = await this.db.query(
       `INSERT INTO recipients (email, name, metadata, is_valid) VALUES ${placeholders}`,
       flatValues
     );
 
-    return { insertedCount: result.affectedRows };
-  }
-
-  async update(id, data) {
-    const { email, name, metadata } = data;
-
-    // Await the email validation before using it
-    const isValid = await this.validateEmail(email);
-
-    await this.db.query(
-      "UPDATE recipients SET email = ?, name = ?, metadata = ?, is_valid = ? WHERE id = ?",
-      [email, name, JSON.stringify(metadata || {}), isValid ? 1 : 0, id]
-    );
-
-    return this.getById(id);
+    return {
+      insertedCount: result.affectedRows,
+      skipped: invalidEmails,
+      message: `${result.affectedRows} valid recipients added, ${invalidEmails.length} skipped.`,
+    };
   }
 
   async delete(id) {
